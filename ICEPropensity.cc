@@ -46,9 +46,11 @@ int main(int argc, char **argv)
     if (trrPointer != NULL)
     {
         while (gmx_trr_read_frame(
-            trrPointer, &frameStep, &frameTime,
-            &frameLambda, &frameBox, &frameNumAtoms,
-            &framePosition, &frameVelocity, &frameForce))
+                trrPointer, &frameStep, &frameTime,
+                &frameLambda, &frameBox, &frameNumAtoms,
+                &framePosition, &frameVelocity, &frameForce
+            )
+        )
         {
 
         }
