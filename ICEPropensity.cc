@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <getopt.h>
 #include <gromacs/topology/topology.h>
 #include <gromacs/fileio/trrio.h>
@@ -9,12 +10,10 @@ int main(int argc, char **argv)
 {
     /* Variables that need to be set */
     std::string trrFileName;
-    gmx_int64_t frameStep;
-    real frameTime;
-    real frameLambda;
-    rvec frameBox;
     int frameNumAtoms;
-    rvec framePosition, frameVelocity, frameForce;
+    gmx_int64_t frameStep;
+    real frameTime, frameLambda;
+    rvec frameBox, framePosition, frameVelocity, frameForce;
 
     /* Parse command line options */
     namespace po = boost::program_options;
@@ -25,13 +24,18 @@ int main(int argc, char **argv)
     ;
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
+
+    /* Notify the user of variables set via command line options */
     po::notify(vm);
+
+    /* If help is given then show the help and exit */
     if (vm.count("help"))
     {
         std::cout << desc << std::endl;
         return 1;
     }
 
+    /* If TRR file is given notify user that was heard */
     if (vm.count("trr"))
     {
         std::cout << "TRR trajectory file set to "
@@ -39,7 +43,10 @@ int main(int argc, char **argv)
         trrFileName = vm["trr"].as<std::string>();
     }
     else
+    {
         std::cout << "No input trajectory file name was set" << std::endl;
+        return 1;
+    }
 
     /* Load the TRR file */
     t_fileio *trrPointer = gmx_trr_open(trrFileName.c_str(), "r");
@@ -52,7 +59,9 @@ int main(int argc, char **argv)
             )
         )
         {
-
+            /* Periodically notify which step */
+            //if (frameStep % 100 == 0)
+            //    std::cout << "--> Read step " << std::setw(7) << frameStep << std::endl;
         }
     }
 
