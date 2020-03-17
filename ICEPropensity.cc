@@ -13,7 +13,9 @@ int main(int argc, char **argv)
     int frameNumAtoms;
     gmx_int64_t frameStep;
     real frameTime, frameLambda;
-    rvec frameBox, framePosition, frameVelocity, frameForce;
+    rvec frameBox, *framePosition, *frameVelocity, *frameForce;
+    gmx_trr_header_t frameHeader;
+    gmx_bool outOk;
 
     /* Parse command line options */
     namespace po = boost::program_options;
@@ -52,16 +54,23 @@ int main(int argc, char **argv)
     t_fileio *trrPointer = gmx_trr_open(trrFileName.c_str(), "r");
     if (trrPointer != NULL)
     {
-        while (gmx_trr_read_frame(
-                trrPointer, &frameStep, &frameTime,
-                &frameLambda, &frameBox, &frameNumAtoms,
-                &framePosition, &frameVelocity, &frameForce
-            )
-        )
+        if (gmx_trr_read_frame_header(trrPointer, &frameHeader, &outOk))
+        {
+            std::cout << "Header has been read" << std::endl;
+            std::cout << "There are " << std::setw(7) << frameHeader.natoms << " in the system" << std::endl;
+            std::cout << "The system size: " << std::setw(7) << frameHeader.step << std::endl;
+
+            framePosition = new rvec[frameHeader.natoms];
+            frameVelocity = new rvec[frameHeader.natoms];
+            frameForce = new rvec[frameHeader.natoms];
+        }
+        while (gmx_trr_read_frame_data(trrPointer, &frameHeader, &frameBox,
+                                       framePosition, frameVelocity, frameForce))
         {
             /* Periodically notify which step */
-            //if (frameStep % 100 == 0)
-            //    std::cout << "--> Read step " << std::setw(7) << frameStep << std::endl;
+            std::cout << "--> Read step " << std::setw(7) << frameStep << std::endl;
+            std::cout << framePosition[0][0] << " " << framePosition[0][1] << " " << framePosition[0][2] << std::endl;
+            std::cout << framePosition[0][0] << " " << framePosition[0][1] << " " << framePosition[0][2] << std::endl;
         }
     }
 

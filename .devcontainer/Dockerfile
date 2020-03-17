@@ -23,5 +23,9 @@ RUN apt-get install -y libboost1.65-all-dev libboost1.65-dev libboost1.65-doc
 
 RUN apt-get install -y cmake
 
+RUN apt-get install cookiecutter
+WORKDIR ~/.cookiecutters
+RUN git clone https://github.com/mkrapp/cookiecutter-reproducible-science.git
+
 # Set the display to make life easier
 ENV DISPLAY=172.50.1.221:0.0
