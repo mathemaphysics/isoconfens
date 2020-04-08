@@ -15,13 +15,23 @@ RUN apt-get update -y \
 	&& apt-get install -y gdb language-pack-en-base \
 	&& apt-get install -y gcc g++ python2.7 python2.7-dev \
 	&& apt-get install -y python2.7-doc python2.7-examples \
-	&& apt-get install -y wget vim locate git
+	&& apt-get install -y wget vim locate git cmake
 
-RUN apt-get install -y gromacs libgromacs-dev
+#RUN apt-get install -y gromacs libgromacs-dev
+RUN apt-get install -y fftw3 fftw3-dev
+
+# Build GROMACS 2020.1
+WORKDIR /workspaces/gromacs-install
+RUN wget http://ftp.gromacs.org/pub/gromacs/gromacs-2020.1.tar.gz
+RUN tar xvf gromacs-2020.1.tar.gz
+RUN cd gromacs-2020.1 \
+	&& mkdir build && cd build \
+	&& cmake .. -DGMX_OPENMP=ON -DGMX_DETECT_GPU_AVAILABLE=ON -DCMAKE_INSTALL_PREFIX=/usr \
+	&& make && make install
+RUN rm -rf /usr/include/gromacs \
+	&& ln -s /workspaces/gromacs-install/src/gromacs /usr/include/
 
 RUN apt-get install -y libboost1.65-all-dev libboost1.65-dev libboost1.65-doc
-
-RUN apt-get install -y cmake
 
 RUN apt-get install -y cookiecutter
 WORKDIR ~/.cookiecutters
