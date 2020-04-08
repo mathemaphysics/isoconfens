@@ -64,13 +64,15 @@ int main(int argc, char **argv)
             frameVelocity = new rvec[frameHeader.natoms];
             frameForce = new rvec[frameHeader.natoms];
         }
-        while (gmx_trr_read_frame_data(trrPointer, &frameHeader, &frameBox,
-                                       framePosition, frameVelocity, frameForce))
+        while (!feof(trrPointer))
         {
+            gmx_trr_read_frame_data(trrPointer, &frameHeader, &frameBox,
+                                       framePosition, frameVelocity, frameForce);
             /* Periodically notify which step */
             std::cout << "--> Read step " << std::setw(7) << frameStep << std::endl;
             std::cout << framePosition[0][0] << " " << framePosition[0][1] << " " << framePosition[0][2] << std::endl;
-            std::cout << framePosition[0][0] << " " << framePosition[0][1] << " " << framePosition[0][2] << std::endl;
+            std::cout << framePosition[1][0] << " " << framePosition[1][1] << " " << framePosition[1][2] << std::endl;
+            std::cout << framePosition[2][0] << " " << framePosition[2][1] << " " << framePosition[2][2] << std::endl;
         }
     }
 

@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/workspaces/gromacs/build",
-  "command": "/usr/bin/g++-7    -g   -o CMakeFiles/ICEPropensity.dir/ICEPropensity.cc.o -c /workspaces/gromacs/ICEPropensity.cc",
-  "file": "/workspaces/gromacs/ICEPropensity.cc"
-}
-]

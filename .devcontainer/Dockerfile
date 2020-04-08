@@ -23,7 +23,7 @@ RUN apt-get install -y libboost1.65-all-dev libboost1.65-dev libboost1.65-doc
 
 RUN apt-get install -y cmake
 
-RUN apt-get install cookiecutter
+RUN apt-get install -y cookiecutter
 WORKDIR ~/.cookiecutters
 RUN git clone https://github.com/mkrapp/cookiecutter-reproducible-science.git
 
