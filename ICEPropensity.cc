@@ -64,7 +64,7 @@ int main(int argc, char **argv)
             frameVelocity = new rvec[frameHeader.natoms];
             frameForce = new rvec[frameHeader.natoms];
         }
-        while (!feof(trrPointer))
+        while (trrPointer)
         {
             gmx_trr_read_frame_data(trrPointer, &frameHeader, &frameBox,
                                        framePosition, frameVelocity, frameForce);
