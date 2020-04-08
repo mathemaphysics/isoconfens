@@ -13,9 +13,14 @@ if (Boost_FOUND)
     target_link_libraries(ICEPropensity ${Boost_LIBRARIES})
 endif (Boost_FOUND)
 
-find_library(GROMACS_LIBRARIES gromacs)
-if(NOT ${GROMACS_LIBRARIES} EQUAL GROMACS_LIBRARIES-NOTFOUND)
-    target_link_libraries(ICEPropensity ${GROMACS_LIBRARIES})
+find_package(OpenMP)
+
+find_package(GROMACS)
+if(GROMACS_FOUND)
+    message("Directory is ${GROMACS_INCLUDE_DIRS}")
+    message("Library is ${GROMACS_LIBRARIES}")
+    include_directories(${GROMACS_INCLUDE_DIRS})
+    target_link_libraries(ICEPropensity /home/rpdaly/.local/lib/libgromacs.so)
 endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

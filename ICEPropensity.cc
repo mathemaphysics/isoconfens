@@ -11,7 +11,7 @@ int main(int argc, char **argv)
     /* Variables that need to be set */
     std::string trrFileName;
     int frameNumAtoms;
-    gmx_int64_t frameStep;
+    u_int64_t frameStep;
     real frameTime, frameLambda;
     rvec frameBox, *framePosition, *frameVelocity, *frameForce;
     gmx_trr_header_t frameHeader;
@@ -64,6 +64,7 @@ int main(int argc, char **argv)
             frameVelocity = new rvec[frameHeader.natoms];
             frameForce = new rvec[frameHeader.natoms];
         }
+        frameStep = 0;
         while (trrPointer)
         {
             gmx_trr_read_frame_data(trrPointer, &frameHeader, &frameBox,
@@ -73,6 +74,7 @@ int main(int argc, char **argv)
             std::cout << framePosition[0][0] << " " << framePosition[0][1] << " " << framePosition[0][2] << std::endl;
             std::cout << framePosition[1][0] << " " << framePosition[1][1] << " " << framePosition[1][2] << std::endl;
             std::cout << framePosition[2][0] << " " << framePosition[2][1] << " " << framePosition[2][2] << std::endl;
+            frameStep = frameStep + 1;
         }
     }
 
