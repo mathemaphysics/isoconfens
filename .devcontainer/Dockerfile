@@ -29,12 +29,12 @@ RUN cd gromacs-2020.1 \
 	&& cmake .. -DGMX_OPENMP=ON -DGMX_DETECT_GPU_AVAILABLE=ON -DCMAKE_INSTALL_PREFIX=/usr \
 	&& make && make install
 RUN rm -rf /usr/include/gromacs \
-	&& ln -s /workspaces/gromacs-install/src/gromacs /usr/include/
+	&& ln -sf /workspaces/gromacs-install/gromacs-2020.1/src/gromacs /usr/include/
 
 RUN apt-get install -y libboost1.65-all-dev libboost1.65-dev libboost1.65-doc
 
 RUN apt-get install -y cookiecutter
-WORKDIR ~/.cookiecutters
+WORKDIR /root/.cookiecutters
 RUN git clone https://github.com/mkrapp/cookiecutter-reproducible-science.git
 
 # Set the display to make life easier
