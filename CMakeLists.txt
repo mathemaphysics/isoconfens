@@ -5,12 +5,14 @@ include(CTest)
 enable_testing()
 
 add_executable(ICEPropensity ICEPropensity.cc)
+add_executable(GMXTemplateICE GMXTemplateICE.cc)
 
 find_package(Boost REQUIRED program_options)
 if (Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     link_directories(${Boost_LIBRARY_DIRS})
     target_link_libraries(ICEPropensity ${Boost_LIBRARIES})
+    target_link_libraries(GMXTemplateICE ${Boost_LIBRARIES})
 endif (Boost_FOUND)
 
 find_package(OpenMP)
@@ -21,6 +23,7 @@ if(GROMACS_FOUND)
     message("Library is ${GROMACS_LIBRARIES}")
     include_directories(${GROMACS_INCLUDE_DIRS})
     target_link_libraries(ICEPropensity libgromacs.so)
+    target_link_libraries(GMXTemplateICE libgromacs.so)
 endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
