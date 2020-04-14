@@ -37,5 +37,7 @@ RUN apt-get install -y cookiecutter
 WORKDIR /root/.cookiecutters
 RUN git clone https://github.com/mkrapp/cookiecutter-reproducible-science.git
 
+
+
 # Set the display to make life easier
 ENV DISPLAY=172.50.1.221:0.0
