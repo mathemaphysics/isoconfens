@@ -7,7 +7,7 @@ enable_testing()
 add_executable(ICEPropensity ICEPropensity.cc)
 add_executable(GMXTemplateICE GMXTemplateICE.cc)
 
-find_package(Boost REQUIRED program_options)
+find_package(Boost REQUIRED program_options filesystem regex)
 if (Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     link_directories(${Boost_LIBRARY_DIRS})
