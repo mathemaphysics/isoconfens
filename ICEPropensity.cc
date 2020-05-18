@@ -79,40 +79,43 @@ int main(int argc, char **argv)
         std::string file;
         file = trrFiles.top();
         std::cout << "Running trajectory " << file << std::endl;
-        trrFiles.pop();
-    }
 
-    return 0;
-
-    /* Load the TRR file */
-    t_fileio *trrPointer = gmx_trr_open(trrFileBaseName.c_str(), "r");
-    if (trrPointer != NULL)
-    {
-        if (gmx_trr_read_frame_header(trrPointer, &frameHeader, &outOk))
+        /* Load the TRR file */
+        t_fileio *trrPointer = gmx_trr_open(file.c_str(), "r");
+        if (trrPointer != NULL)
         {
-            std::cout << "Header has been read" << std::endl;
-            std::cout << "There are " << std::setw(7) << frameHeader.natoms << " in the system" << std::endl;
-            std::cout << "The system size: " << std::setw(7) << frameHeader.step << std::endl;
+            if (gmx_trr_read_frame_header(trrPointer, &frameHeader, &outOk))
+            {
+                std::cout << "Header has been read" << std::endl;
+                std::cout << "There are " << std::setw(7) << frameHeader.natoms << " in the system" << std::endl;
 
-            firstFramePosition = new rvec[frameHeader.natoms];
-            framePosition = new rvec[frameHeader.natoms];
-            frameVelocity = new rvec[frameHeader.natoms];
-            frameForce = new rvec[frameHeader.natoms];
-        }
-        frameStep = 0;
+                firstFramePosition = new rvec[frameHeader.natoms];
+                framePosition = new rvec[frameHeader.natoms];
+                frameVelocity = new rvec[frameHeader.natoms];
+                frameForce = new rvec[frameHeader.natoms];
+            }
+            frameStep = 0;
 
-        while (trrPointer)
-        {
-            gmx_trr_read_frame_data(trrPointer, &frameHeader, &frameBox,
-                                       framePosition, frameVelocity, frameForce);
-            int origin = frameStep;
-            //for (int i = 0; i < frameHeader.natoms; i++)
+            //while (trrPointer)
             //{
-            //    rvec_sub(framePosition[i], firstFramePosition[i], tempVector);
-            //    norm2(tempVector);
+            //    gmx_trr_read_frame_data(trrPointer, &frameHeader, &frameBox,
+            //                            framePosition, frameVelocity, frameForce);
+            //    int origin = frameStep;
+            //    //for (int i = 0; i < frameHeader.natoms; i++)
+            //    //{
+            //    //    rvec_sub(framePosition[i], firstFramePosition[i], tempVector);
+            //    //    norm2(tempVector);
+            //    //}
+            //    frameStep = frameStep + 1;
             //}
-            frameStep = frameStep + 1;
+
+            delete [] firstFramePosition;
+            delete [] framePosition;
+            delete [] frameVelocity;
+            delete [] frameForce;
         }
+        gmx_trr_close(trrPointer);
+        trrFiles.pop();
     }
 
     return 0;

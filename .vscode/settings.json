@@ -2,7 +2,7 @@
     "cmake.debugConfig": {
         "args": [
             "--trr",
-            "traj.trr"
+            "test"
         ]
     }
 }

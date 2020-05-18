@@ -6,6 +6,7 @@ enable_testing()
 
 add_executable(ICEPropensity ICEPropensity.cc)
 add_executable(GMXTemplateICE GMXTemplateICE.cc)
+add_subdirectory(tests)
 
 find_package(Boost REQUIRED program_options filesystem regex)
 if (Boost_FOUND)
