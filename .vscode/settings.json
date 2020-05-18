@@ -4,5 +4,6 @@
             "--trr",
             "test"
         ]
-    }
+    },
+    "cmakeExplorer.buildDir": "build"
 }

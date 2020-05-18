@@ -16,12 +16,14 @@ int main(int argc, char **argv)
 {
     /* Variables that need to be set */
     std::string trrFileBaseName;
-    int frameNumAtoms;
+    int frameNumAtoms, bufferLevel;
     u_int64_t frameStep;
-    real frameTime, frameLambda;
-    rvec frameBox, tempVector, *firstFramePosition, *framePosition, *frameVelocity, *frameForce;
+    real frameTime, frameLambda, *msdAccumulator;
+    rvec frameBox, *frameBuffer;
     gmx_trr_header_t frameHeader;
     gmx_bool outOk;
+    const int frameBufferSize = 100;
+    const int maxTimeDiff = 100;
 
     /* Set up namespaces for convenience */
     namespace po = boost::program_options;
@@ -74,6 +76,7 @@ int main(int argc, char **argv)
         }
     }
 
+    bool firstTrajectory = true;
     while (!trrFiles.empty())
     {
         std::string file;
@@ -89,30 +92,59 @@ int main(int argc, char **argv)
                 std::cout << "Header has been read" << std::endl;
                 std::cout << "There are " << std::setw(7) << frameHeader.natoms << " in the system" << std::endl;
 
-                firstFramePosition = new rvec[frameHeader.natoms];
-                framePosition = new rvec[frameHeader.natoms];
-                frameVelocity = new rvec[frameHeader.natoms];
-                frameForce = new rvec[frameHeader.natoms];
+                /* Allocate only the first time */
+                if (firstTrajectory)
+                {
+                    frameBuffer = new rvec[frameBufferSize*frameHeader.natoms];
+                    msdAccumulator = new real[frameHeader.natoms];
+                    firstTrajectory = false;
+                }
             }
+            else
+                throw(std::exception());
+
+            bufferLevel = 0;
             frameStep = 0;
+            while (
+                gmx_trr_read_frame_data(
+                    trrPointer, &frameHeader, &frameBox,
+                    &frameBuffer[bufferLevel * frameHeader.natoms],
+                    NULL, NULL
+                )
+            )
+            {
+                if (bufferLevel >= frameBufferSize - 1)
+                {
+                    int origin = frameStep;
+                    for (int i = 0; i < frameBufferSize; i++)
+                    {
+                        for (int j = 0; j < maxTimeDiff; j++)
+                        {
+                            for (int k = 0; k < frameHeader.natoms; k++)
+                            {
+                                rvec diffVector;
+                                rvec_sub(frameBuffer[i * frameHeader.natoms + k],
+                                         frameBuffer[(i + j) * frameHeader.natoms + k],
+                                         diffVector);
+                                real metricDistance = norm2(diffVector);
+                                msdAccumulator[k] = msdAccumulator[k] + metricDistance;
+                            }
+                        }
+                    }
+                    bufferLevel = 0;
+                }
+                else
+                    bufferLevel = bufferLevel + 1;
+                
+                frameStep = frameStep + 1;
+            }
 
-            //while (trrPointer)
-            //{
-            //    gmx_trr_read_frame_data(trrPointer, &frameHeader, &frameBox,
-            //                            framePosition, frameVelocity, frameForce);
-            //    int origin = frameStep;
-            //    //for (int i = 0; i < frameHeader.natoms; i++)
-            //    //{
-            //    //    rvec_sub(framePosition[i], firstFramePosition[i], tempVector);
-            //    //    norm2(tempVector);
-            //    //}
-            //    frameStep = frameStep + 1;
-            //}
-
-            delete [] firstFramePosition;
-            delete [] framePosition;
-            delete [] frameVelocity;
-            delete [] frameForce;
+            /* Only deallocate if you allocated, i.e. found at least a trajectory */
+            if (!firstTrajectory)
+            {
+                delete[] frameBuffer;
+                delete[] msdAccumulator;
+            }
         }
         gmx_trr_close(trrPointer);
         trrFiles.pop();
