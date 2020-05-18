@@ -138,16 +138,16 @@ int main(int argc, char **argv)
                 
                 frameStep = frameStep + 1;
             }
-
-            /* Only deallocate if you allocated, i.e. found at least a trajectory */
-            if (!firstTrajectory)
-            {
-                delete[] frameBuffer;
-                delete[] msdAccumulator;
-            }
         }
         gmx_trr_close(trrPointer);
         trrFiles.pop();
+    }
+
+    /* Only deallocate if you allocated, i.e. found at least a trajectory */
+    if (!firstTrajectory)
+    {
+        delete[] frameBuffer;
+        delete[] msdAccumulator;
     }
 
     return 0;
